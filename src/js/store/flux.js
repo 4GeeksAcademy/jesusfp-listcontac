@@ -1,44 +1,111 @@
 const getState = ({ getStore, getActions, setStore }) => {
 	return {
 		store: {
-			demo: [
-				{
-					title: "FIRST",
-					background: "white",
-					initial: "white"
-				},
-				{
-					title: "SECOND",
-					background: "white",
-					initial: "white"
-				}
-			]
+			contactList: [],
+			hiddenMessage: "hidden",
+			deleteStatus: false
 		},
 		actions: {
-			// Use getActions to call a function within a fuction
-			exampleFunction: () => {
-				getActions().changeColor(0, "green");
-			},
-			loadSomeData: () => {
-				/**
-					fetch().then().then(data => setStore({ "foo": data.bar }))
-				*/
-			},
-			changeColor: (index, color) => {
-				//get the store
-				const store = getStore();
+			getContactList: async () => {
+				const requestOptions = {
+					method: "GET",
+					redirect: "follow"
+				};
 
-				//we have to loop the entire demo array to look for the respective index
-				//and change its color
-				const demo = store.demo.map((elm, i) => {
-					if (i === index) elm.background = color;
-					return elm;
+				try {
+					const response = await fetch("https://playground.4geeks.com/contact/agendas/PabloQuerales/contacts/", requestOptions);
+					const result = await response.json();
+					setStore({ contactList: result.contacts, hiddenMessage: "hidden", deleteStatus: false })
+
+				} catch (error) {
+					console.error(error);
+				};
+			},
+
+			createUser: async () => {
+				const requestOptions = {
+					method: "POST",
+					redirect: "follow"
+				};
+
+				try {
+					const response = await fetch("https://playground.4geeks.com/contact/agendas/PabloQuerales", requestOptions);
+				} catch (error) {
+					console.error(error);
+				}
+			},
+
+			postContact: async (inputValue) => {
+				const myHeaders = new Headers();
+				myHeaders.append("Content-Type", "application/json");
+				const raw = JSON.stringify({
+					"name": `${inputValue.name}`,
+					"phone": `${inputValue.phone}`,
+					"email": `${inputValue.email}`,
+					"address": `${inputValue.address}`
+				});
+				const requestOptions = {
+					method: "POST",
+					headers: myHeaders,
+					body: raw,
+					redirect: "follow"
+				};
+				try {
+					const response = await fetch("https://playground.4geeks.com/contact/agendas/PabloQuerales/contacts", requestOptions);
+					if (response.status == 201) {
+						setStore({ hiddenMessage: "" })
+					} else {
+						setStore({ hiddenMessage: "hidden" })
+					}
+				} catch (error) {
+					console.error(error);
+				};
+			},
+			deleteContact: async (id) => {
+				const requestOptions = {
+					method: "DELETE",
+					redirect: "follow"
+				};
+				try {
+					const response = await fetch(`https://playground.4geeks.com/contact/agendas/PabloQuerales/contacts/${id}`, requestOptions)
+					if (response.status == 204) {
+						setStore({deleteStatus: true})
+					}
+
+				} catch (error) {
+					console.error(error);
+				};
+			},
+			editContact: async (id, inputValue) => {
+				const myHeaders = new Headers();
+				myHeaders.append("Content-Type", "application/json");
+
+				const raw = JSON.stringify({
+					"name": `${inputValue.name}`,
+					"phone": `${inputValue.phone}`,
+					"email": `${inputValue.email}`,
+					"address": `${inputValue.address}`
 				});
 
-				//reset the global store
-				setStore({ demo: demo });
+				const requestOptions = {
+					method: "PUT",
+					headers: myHeaders,
+					body: raw,
+					redirect: "follow"
+				};
+
+				try {
+					const response = await fetch(`https://playground.4geeks.com/contact/agendas/PabloQuerales/contacts/${id}`, requestOptions);
+					if (response.status == 200) {
+						setStore({ hiddenMessage: "" })
+					} else {
+						setStore({ hiddenMessage: "hidden" })
+					}
+				} catch (error) {
+					console.error(error);
+				}
 			}
-		}
+		},
 	};
 };
 

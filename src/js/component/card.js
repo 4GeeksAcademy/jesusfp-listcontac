@@ -1,50 +1,28 @@
 import React from "react";
-import { Card, Button } from "react-bootstrap";
-import { Link, useNavigate } from "react-router-dom";
-import { FaMapMarkerAlt, FaPhone, FaEnvelope, FaEdit, FaTrash } from 'react-icons/fa'; // Asegúrate de importar los íconos
+import { Link } from "react-router-dom";
+import { Modal } from "./deleteContat"
 
-const ContactCard = ({ contact, onDelete }) => {
-  const navigate = useNavigate();
+export const Card = (props) => {
 
-  return (
-    <Card className="mb-3 shadow-sm card w-50 mx-auto mt-2">
-      <Card.Body className="d-flex align-items-center justify-content-between">
-        {/* Imagen del contacto */}
-        <img
-          src={contact.image || "https://media.istockphoto.com/id/1091291084/es/vector/foto-de-perfil-neutro.jpg?s=2048x2048&w=is&k=20&c=lcWclUlTspS_0-6SWxujxRNXc69nEwABzvAJAFiYfJU="}
-          alt="Profile"
-          className="rounded-circle"
-          width="200"
-          height="200"
-        />
-        {/* Información del contacto */}
-        <div className="">
-          <Card.Title>
-            <Link to={`/contact/${contact.id}`} className="text-decoration-none text-dark">
-              {contact.name}
-            </Link>
-          </Card.Title>
-          <Card.Text>
-            <FaMapMarkerAlt className="me-2" />
-            {contact.address} <br />
-            <FaPhone className="me-2" />
-            {contact.phone} <br />
-            <FaEnvelope className="me-2" />
-            {contact.email}
-          </Card.Text>
+    return (
+        <div className="card" >
+            <div className="row g-0">
+                <div className="col-md-4 d-flex justify-content-center align-items-center">
+                    <img src="https://images.unsplash.com/photo-1602514328225-24d95071ec93?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" className="img-profile" alt="..." />
+                </div>
+                <div className="col-md-6">
+                    <div className="card-body">
+                        <h5 className="card-title">{props.name}</h5>
+                        <p className="card-text"><i className="bi bi-geo-alt-fill"></i>{props.address}</p>
+                        <p className="card-text"><i className="bi bi-telephone-fill"></i>{props.phone}</p>
+                        <p className="card-text"><i className="bi bi-envelope-fill"></i>{props.email}</p>
+                    </div>
+                </div>
+                <div className="col-md-2 d-flex justify-content-center align-items-center gap-3 fs-5">
+                    <Link className="bi bi-pencil-fill" to={`/edit-contact/${props.id}`}></Link>
+                    <Modal id={props.id} />
+                </div>
+            </div>
         </div>
-        {/* Botones de acciones */}
-        <div>
-          <Button variant="outline-primary" size="sm" className="me-2" onClick={() => navigate(`/edit-contact/${contact.id}`)}>
-            <FaEdit />
-          </Button>
-          <Button variant="outline-danger" size="sm" onClick={() => onDelete(contact.id)}>
-            <FaTrash />
-          </Button>
-        </div>
-      </Card.Body>
-    </Card>
-  );
-};
-
-export default ContactCard;
+    )
+}
